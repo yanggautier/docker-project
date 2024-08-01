@@ -1,0 +1,69 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb-container
+    volumes:
+      - ./data/mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+      - MONGO_INITDB_DATABASE=project
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    restart: always
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_ROOT_USER}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_ROOT_PASSWORD}
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGOEXPRESS_LOGIN}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGOEXPRESS_PASSWORD}
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+    depends_on:
+      - mongodb
+    ports:
+      - '8081:8081'
+    volumes: 
+      - ./data/mongo_data:/data/db
+
+  jupyter:
+    build: ./jupyter/
+    ports:
+      - "8887:8888"
+    depends_on:
+      - mongodb
+    volumes:
+      - ./jupyter:/work
+    container_name: jupyter-container
+    env_file:
+      - .env
+
+  streamlit:
+    image:  my-streamlit-image
+    build: ./streamlit_app/
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./streamlit_app:/app
+    depends_on:
+      - mongodb
+      - jupyter
+    container_name: streamlit-container
+    env_file:
+      - .env
+  
+  flask:
+    image: my-flask-image
+    build: ./flask_app
+    ports:
+      - 5001:5000
+    depends_on:
+      - mongodb
+      - jupyter
+    container_name: flask-container
+    env_file:
+      - .env
