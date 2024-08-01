@@ -18,12 +18,8 @@ def books():
         client = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')
         db = client["db"]
         collection = db["books"]
-        cursor = collection.find()
+        cursor = collection.find({}, {'_id': 0})
         books = list(cursor)
-
-        for book in books:
-            book.pop('_id', None)
-
         return jsonify(books)
     
     except ConnectionError:
