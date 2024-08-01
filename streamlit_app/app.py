@@ -4,15 +4,13 @@ import os
 from pymongo import MongoClient
 
 
-username = os.environ["MONGO_ROOT_USER"]
-password = os.environ["MONGO_ROOT_PASSWORD"]
-# Titre de l'application
+mongo_uri = os.environ["MONGO_URI"]
 
 st.title('Application Streamlit Simple')
 
 
 try:
-    client = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')
+    client = MongoClient(mongo_uri)
     db = client["db"]
     books = db["books"]
     # Fetch all documents from the collection

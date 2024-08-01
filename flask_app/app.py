@@ -2,8 +2,7 @@ from flask import Flask, jsonify
 from pymongo import MongoClient
 import os 
 
-username = os.environ["MONGO_ROOT_USER"]
-password = os.environ["MONGO_ROOT_PASSWORD"]
+mongo_uri = os.environ["MONGO_URI"]
 
 app = Flask(__name__)
 
@@ -15,7 +14,7 @@ def home():
 @app.route('/books')
 def books():
     try:
-        client = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')
+        client = MongoClient(mongo_uri)
         db = client["db"]
         collection = db["books"]
         cursor = collection.find({}, {'_id': 0})

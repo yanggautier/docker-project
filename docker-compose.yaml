@@ -4,8 +4,8 @@ services:
     container_name: mongodb-container
     volumes:
       - ./data/mongo_data:/data/db
-#    ports:
-#      - "27017:27017"
+    ports:
+      - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
@@ -39,8 +39,8 @@ services:
     volumes:
       - ./jupyter:/work
     container_name: jupyter-container
-    env_file:
-      - .env
+    environment:
+      - MONGO_URI = mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/
 
   streamlit:
     image:  my-streamlit-image
@@ -53,8 +53,8 @@ services:
       - mongodb
       - jupyter
     container_name: streamlit-container
-    env_file:
-      - .env
+    environment:
+      - MONGO_URI = mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/
   
   flask:
     image: my-flask-image
@@ -64,6 +64,7 @@ services:
     depends_on:
       - mongodb
       - jupyter
+    environment:
+      - MONGO_URI = mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/
     container_name: flask-container
-    env_file:
-      - .env
+    

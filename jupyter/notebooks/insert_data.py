@@ -2,12 +2,11 @@ from pymongo import MongoClient
 import os
 import pandas as pd
 
-username = os.environ["MONGO_ROOT_USER"]
-password = os.environ["MONGO_ROOT_PASSWORD"]
+mongo_uri = os.environ["MONGO_URI"]
 
 def insert_data(file_path):
     try:
-        client = MongoClient(f'mongodb://{username}:{password}@mongodb:27017/')
+        client = MongoClient(mongo_uri)
         db = client["db"]
         books = db["books"]
 
